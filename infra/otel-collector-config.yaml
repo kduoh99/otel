@@ -1,0 +1,30 @@
+receivers:
+  otlp:                                # OTLP 리시버 설정
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317         # gRPC 수신 포트
+      http:
+        endpoint: 0.0.0.0:4318         # HTTP 수신 포트
+
+processors:
+  batch:                               # 배치 처리 (전송 효율 최적화)
+    timeout: 1s                        # 배치 전송 주기
+    send_batch_size: 1024              # 배치 단위로 묶을 최대 데이터 개수
+  memory_limiter:                      # 메모리 제한 설정
+    limit_mib: 512                     # Collector 메모리 상한
+    check_interval: 1s                 # 메모리 확인 주기
+
+exporters:
+  otlp:                                # Tempo로 전송하는 OTLP Exporter
+    endpoint: tempo:4317               # Tempo OTLP gRPC 엔드포인트
+    tls:
+      insecure: true                   # TLS 미사용 (개발 환경)
+  debug:                               # 디버그 출력 Exporter
+    verbosity: detailed                # 상세 로그 출력
+
+service:
+  pipelines:
+    traces:                            # 트레이스 수집/처리/전송 파이프라인 구성
+      receivers: [otlp]
+      processors: [memory_limiter, batch]
+      exporters: [otlp, debug]
