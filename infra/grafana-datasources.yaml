@@ -1,0 +1,22 @@
+apiVersion: 1
+
+datasources:
+  - name: Tempo                # Grafana에서 사용할 데이터소스 이름
+    type: tempo                # Tempo 데이터소스 타입
+    access: proxy              # 브라우저 대신 Grafana 서버가 Tempo에 직접 요청
+    url: http://tempo:3200     # Tempo 엔드포인트
+    uid: tempo                 # 데이터소스 고유 식별자
+    isDefault: true            # 기본 데이터소스로 설정
+    editable: true             # UI 수정 허용
+    jsonData:
+      httpMethod: GET          # API 호출 방식
+      serviceMap:
+        datasourceUid: 'tempo' # 서비스 맵 정보를 조회할 데이터소스 고유 식별자
+      search:
+        hide: false            # 검색 UI 표시
+      nodeGraph:
+        enabled: true          # 노드 그래프 활성화
+      spanBar:
+        type: 'Tag'            # Span Bar 색상/그룹 기준
+      tracesToLogs:
+        datasourceUid: 'tempo' # Trace → Logs 연동에 사용할 데이터소스 고유 식별자
