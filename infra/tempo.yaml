@@ -1,0 +1,32 @@
+server:
+  http_listen_port: 3200                   # Tempo HTTP 서버 포트
+
+distributor:
+  receivers:
+    otlp:                                  # OTLP 리시버 설정
+      protocols:
+        grpc:
+          endpoint: 0.0.0.0:4317           # gRPC 수신 포트
+        http:
+          endpoint: 0.0.0.0:4318           # HTTP 수신 포트
+
+ingester:
+  trace_idle_period: 10s                   # 블록 마감 기준
+  max_block_bytes: 1_000_000               # 블록 최대 크기
+  max_block_duration: 5m                   # 블록 최대 유지 시간
+
+compactor:
+  compaction:
+    compaction_window: 1h                  # 블록 압축 기준
+    max_block_bytes: 100_000_000           # 압축 후 블록 최대 크기
+    block_retention: 1h                    # 원본 블록 보관 기간
+    compacted_block_retention: 10m         # 압축된 블록 보관 기간
+
+storage:
+  trace:
+    backend: local                         # 저장소 종류
+    local:
+      path: /tmp/tempo/blocks              # 블록 저장 경로
+    pool:
+      max_workers: 100                     # 최대 워커 수
+      queue_depth: 10000                   # 작업 큐 깊이
